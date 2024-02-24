@@ -1,7 +1,8 @@
-import Versions from './components/Versions';
-import electronLogo from './assets/electron.svg';
-import TrpcProvider from './context/trpc.provider';
-import Exam from './components/exam/exam';
+import Versions from './@/components/Versions';
+import electronLogo from '@renderer/assets/electron.svg';
+import TrpcProvider from '@renderer/context/trpc.provider';
+import Exam from './@/components/exam/exam';
+import '@renderer/globals.css';
 
 function App(): JSX.Element {
   const ipcHandle = (): void => window.electron.ipcRenderer.send('ping');
