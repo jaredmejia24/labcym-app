@@ -1,4 +1,4 @@
-# electron-test-fr
+# labcym-app
 
 An Electron application with React and TypeScript
 
