@@ -1,0 +1,171 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Exam {
+  id   Int    @id @default(autoincrement())
+  name String @map("name") @db.VarChar(255)
+
+  createdAt    DateTime       @default(now()) @map("created_at")
+  updatedAt    DateTime       @updatedAt @map("updated_at")
+  deletedAt    DateTime?      @map("deleted_at")
+  ExamDivision ExamDivision[]
+  ExamResult   ExamResult[]
+
+  @@map("exam")
+}
+
+model ExamDivision {
+  id Int @id @default(autoincrement())
+
+  examId Int @map("exam_id")
+
+  name String @map("name") @db.VarChar(255)
+
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
+
+  exam                 Exam                   @relation(fields: [examId], references: [id])
+  QualitativeProperty  QualitativeProperty[]
+  QuantitativeProperty QuantitativeProperty[]
+
+  @@map("exam_division")
+}
+
+model QualitativeProperty {
+  id Int @id @default(autoincrement())
+
+  name String @map("name") @db.VarChar(255)
+
+  examDivisionId Int @map("exam_division_id")
+
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
+
+  examDivision              ExamDivision                @relation(fields: [examDivisionId], references: [id])
+  QualitativePropertyResult QualitativePropertyResult[]
+
+  @@map("qualitative_property")
+}
+
+model QuantitativeProperty {
+  id Int @id @default(autoincrement())
+
+  examDivisionId Int @map("exam_division_id")
+
+  name  String @map("name") @db.VarChar(255)
+  unity String @db.VarChar(255)
+
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
+
+  examDivision                           ExamDivision                             @relation(fields: [examDivisionId], references: [id])
+  ValueReferenceTypeQuantitativeProperty ValueReferenceTypeQuantitativeProperty[]
+  QuantitativePropertyResult             QuantitativePropertyResult[]
+
+  @@map("quantitative_property")
+}
+
+model ValueReferenceType {
+  id Int @id @default(autoincrement())
+
+  name String @db.VarChar(255)
+
+  createdAt                              DateTime                                 @default(now()) @map("created_at")
+  updatedAt                              DateTime                                 @updatedAt @map("updated_at")
+  deletedAt                              DateTime?                                @map("deleted_at")
+  ValueReferenceTypeQuantitativeProperty ValueReferenceTypeQuantitativeProperty[]
+
+  @@map("value_reference_type")
+}
+
+model ValueReferenceTypeQuantitativeProperty {
+  valueReferenceTypeId   Int    @map("value_reference_type_id")
+  quantitativePropertyId Int    @map("quantitative_property_id")
+  value                  String @db.VarChar(255)
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  valueReferenceType   ValueReferenceType   @relation(fields: [valueReferenceTypeId], references: [id])
+  quantitativeProperty QuantitativeProperty @relation(fields: [quantitativePropertyId], references: [id])
+
+  @@id([valueReferenceTypeId, quantitativePropertyId])
+  @@map("value_reference_types_quantitative_properties")
+}
+
+model ExamResult {
+  id Int @id @default(autoincrement())
+
+  examId    Int @map("exam_id")
+  patientId Int @map("patient_id")
+
+  note String @db.VarChar(255)
+
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
+
+  exam                       Exam                         @relation(fields: [examId], references: [id])
+  patient                    Patient                      @relation(fields: [patientId], references: [id])
+  QuantitativePropertyResult QuantitativePropertyResult[]
+  QualitativePropertyResult  QualitativePropertyResult[]
+
+  @@map("exam_result")
+}
+
+model QuantitativePropertyResult {
+  id Int @id @default(autoincrement())
+
+  quantitativePropertyId Int @map("quantitative_property_id")
+  examResultId           Int @map("exam_result_id")
+
+  result Decimal
+
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
+
+  quantitativeProperty QuantitativeProperty @relation(fields: [quantitativePropertyId], references: [id])
+  examResult           ExamResult           @relation(fields: [examResultId], references: [id])
+
+  @@map("quantitative_property_result")
+}
+
+model QualitativePropertyResult {
+  id Int @id @default(autoincrement())
+
+  qualitativePropertyId Int @map("qualitative_property_id")
+  examResultId          Int @map("exam_result_id")
+
+  result String @db.VarChar(255)
+
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
+
+  qualitativeProperty QualitativeProperty @relation(fields: [qualitativePropertyId], references: [id])
+  examResult          ExamResult          @relation(fields: [examResultId], references: [id])
+
+  @@map("qualitative_property_result")
+}
+
+model Patient {
+  id Int @id @default(autoincrement())
+
+  name     String @db.VarChar(255)
+  lastName String @map("last_name") @db.VarChar(255)
+
+  createdAt  DateTime     @default(now()) @map("created_at")
+  updatedAt  DateTime     @updatedAt @map("updated_at")
+  deletedAt  DateTime?    @map("deleted_at")
+  ExamResult ExamResult[]
+}
