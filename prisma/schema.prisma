@@ -106,19 +106,16 @@ model ValueReferenceTypeQuantitativeProperty {
 model ExamResult {
   id Int @id @default(autoincrement())
 
-  examId    Int @map("exam_id")
-  patientId Int @map("patient_id")
-  invoiceId Int @map("invoice_id")
+  examId Int @map("exam_id")
 
-  note String @db.VarChar(255)
+  note String? @db.VarChar(255)
 
   createdAt DateTime  @default(now()) @map("created_at")
   updatedAt DateTime  @updatedAt @map("updated_at")
   deletedAt DateTime? @map("deleted_at")
 
-  exam                       Exam                         @relation(fields: [examId], references: [id])
-  patient                    Patient                      @relation(fields: [patientId], references: [id])
-  invoice                    Invoice                      @relation(fields: [invoiceId], references: [id])
+  exam Exam @relation(fields: [examId], references: [id])
+
   QuantitativePropertyResult QuantitativePropertyResult[]
   QualitativePropertyResult  QualitativePropertyResult[]
 
@@ -171,10 +168,10 @@ model Patient {
   identification String   @unique @db.VarChar(20)
   birthDate      DateTime @map("birth_date")
 
-  createdAt  DateTime     @default(now()) @map("created_at")
-  updatedAt  DateTime     @updatedAt @map("updated_at")
-  deletedAt  DateTime?    @map("deleted_at")
-  ExamResult ExamResult[]
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
+  Result    Result[]
 
   @@index([identification])
   @@map("patient")
@@ -185,10 +182,10 @@ model Invoice {
 
   number String @db.VarChar(255)
 
-  createdAt  DateTime     @default(now()) @map("created_at")
-  updatedAt  DateTime     @updatedAt @map("updated_at")
-  deletedAt  DateTime?    @map("deleted_at")
-  ExamResult ExamResult[]
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
+  Result    Result[]
 
   @@map("invoice")
 }
@@ -198,9 +195,10 @@ model PropertyOption {
 
   name String @db.VarChar(255)
 
-  createdAt                 DateTime                    @default(now()) @map("created_at")
-  updatedAt                 DateTime                    @updatedAt @map("updated_at")
-  deletedAt                 DateTime?                   @map("deleted_at")
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
+
   QualitativePropertyOption QualitativePropertyOption[]
   QualitativePropertyResult QualitativePropertyResult[]
 
@@ -219,4 +217,20 @@ model QualitativePropertyOption {
 
   @@id([propertyOptionId, qualitativePropertyId])
   @@map("qualitative_property_option")
+}
+
+model Result {
+  id Int @id @default(autoincrement())
+
+  patientId Int @map("patient_id")
+  invoiceId Int @map("invoice_id")
+
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
+
+  patient Patient @relation(fields: [patientId], references: [id])
+  invoice Invoice @relation(fields: [invoiceId], references: [id])
+
+  @@map("result")
 }
