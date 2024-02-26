@@ -9,7 +9,7 @@ generator client {
 
 model Exam {
   id   Int    @id @default(autoincrement())
-  name String @map("name") @db.VarChar(255)
+  name String @unique @map("name") @db.VarChar(255)
 
   createdAt    DateTime       @default(now()) @map("created_at")
   updatedAt    DateTime       @updatedAt @map("updated_at")
@@ -17,6 +17,7 @@ model Exam {
   ExamDivision ExamDivision[]
   ExamResult   ExamResult[]
 
+  @@index([name])
   @@map("exam")
 }
 
@@ -78,13 +79,14 @@ model QuantitativeProperty {
 model ValueReferenceType {
   id Int @id @default(autoincrement())
 
-  name String @db.VarChar(255)
+  name String @unique @db.VarChar(255)
 
   createdAt                              DateTime                                 @default(now()) @map("created_at")
   updatedAt                              DateTime                                 @updatedAt @map("updated_at")
   deletedAt                              DateTime?                                @map("deleted_at")
   ValueReferenceTypeQuantitativeProperty ValueReferenceTypeQuantitativeProperty[]
 
+  @@index([name])
   @@map("value_reference_type")
 }
 
@@ -165,7 +167,7 @@ model Patient {
 
   name           String   @db.VarChar(255)
   lastName       String   @map("last_name") @db.VarChar(255)
-  identification String   @unique @db.VarChar(20)
+  identification String?  @unique @db.VarChar(20)
   birthDate      DateTime @map("birth_date")
 
   createdAt DateTime  @default(now()) @map("created_at")
@@ -180,20 +182,21 @@ model Patient {
 model Invoice {
   id Int @id @default(autoincrement())
 
-  number String @db.VarChar(255)
+  number String @unique @db.VarChar(255)
 
   createdAt DateTime  @default(now()) @map("created_at")
   updatedAt DateTime  @updatedAt @map("updated_at")
   deletedAt DateTime? @map("deleted_at")
   Result    Result[]
 
+  @@index([number])
   @@map("invoice")
 }
 
 model PropertyOption {
   id Int @id @default(autoincrement())
 
-  name String @db.VarChar(255)
+  name String @unique @db.VarChar(255)
 
   createdAt DateTime  @default(now()) @map("created_at")
   updatedAt DateTime  @updatedAt @map("updated_at")
@@ -202,6 +205,7 @@ model PropertyOption {
   QualitativePropertyOption QualitativePropertyOption[]
   QualitativePropertyResult QualitativePropertyResult[]
 
+  @@index([name])
   @@map("property_option")
 }
 

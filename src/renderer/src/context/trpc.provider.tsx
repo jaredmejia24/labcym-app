@@ -6,7 +6,9 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import trpcReact from '../lib/trpc';
 
 function TrpcProvider({ children }: { children: ReactNode }) {
-  const [queryClient] = useState(() => new QueryClient());
+  const [queryClient] = useState(
+    () => new QueryClient({ defaultOptions: { queries: { staleTime: 10 * (60 * 1000) } } })
+  );
   const [trpcClient] = useState(() =>
     trpcReact.createClient({
       links: [ipcLink()]
