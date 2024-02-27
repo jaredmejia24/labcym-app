@@ -14,8 +14,8 @@ model Exam {
   createdAt    DateTime       @default(now()) @map("created_at")
   updatedAt    DateTime       @updatedAt @map("updated_at")
   deletedAt    DateTime?      @map("deleted_at")
-  ExamDivision ExamDivision[]
-  ExamResult   ExamResult[]
+  examDivision ExamDivision[]
+  examResult   ExamResult[]
 
   @@index([name])
   @@map("exam")
@@ -33,8 +33,8 @@ model ExamDivision {
   deletedAt DateTime? @map("deleted_at")
 
   exam                 Exam                   @relation(fields: [examId], references: [id])
-  QualitativeProperty  QualitativeProperty[]
-  QuantitativeProperty QuantitativeProperty[]
+  qualitativeProperty  QualitativeProperty[]
+  quantitativeProperty QuantitativeProperty[]
 
   @@map("exam_division")
 }
@@ -51,8 +51,8 @@ model QualitativeProperty {
   deletedAt DateTime? @map("deleted_at")
 
   examDivision              ExamDivision                @relation(fields: [examDivisionId], references: [id])
-  QualitativePropertyResult QualitativePropertyResult[]
-  QualitativePropertyOption QualitativePropertyOption[]
+  qualitativePropertyResult QualitativePropertyResult[]
+  qualitativePropertyOption QualitativePropertyOption[]
 
   @@map("qualitative_property")
 }
@@ -70,8 +70,8 @@ model QuantitativeProperty {
   deletedAt DateTime? @map("deleted_at")
 
   examDivision                           ExamDivision                             @relation(fields: [examDivisionId], references: [id])
-  ValueReferenceTypeQuantitativeProperty ValueReferenceTypeQuantitativeProperty[]
-  QuantitativePropertyResult             QuantitativePropertyResult[]
+  valueReferenceTypeQuantitativeProperty ValueReferenceTypeQuantitativeProperty[]
+  quantitativePropertyResult             QuantitativePropertyResult[]
 
   @@map("quantitative_property")
 }
@@ -118,8 +118,8 @@ model ExamResult {
 
   exam Exam @relation(fields: [examId], references: [id])
 
-  QuantitativePropertyResult QuantitativePropertyResult[]
-  QualitativePropertyResult  QualitativePropertyResult[]
+  quantitativePropertyResult QuantitativePropertyResult[]
+  qualitativePropertyResult  QualitativePropertyResult[]
 
   @@map("exam_result")
 }
@@ -166,14 +166,13 @@ model Patient {
   id Int @id @default(autoincrement())
 
   name           String   @db.VarChar(255)
-  lastName       String   @map("last_name") @db.VarChar(255)
   identification String?  @unique @db.VarChar(20)
   birthDate      DateTime @map("birth_date")
 
   createdAt DateTime  @default(now()) @map("created_at")
   updatedAt DateTime  @updatedAt @map("updated_at")
   deletedAt DateTime? @map("deleted_at")
-  Result    Result[]
+  result    Result[]
 
   @@index([identification])
   @@map("patient")
@@ -187,7 +186,7 @@ model Invoice {
   createdAt DateTime  @default(now()) @map("created_at")
   updatedAt DateTime  @updatedAt @map("updated_at")
   deletedAt DateTime? @map("deleted_at")
-  Result    Result[]
+  result    Result[]
 
   @@index([number])
   @@map("invoice")
@@ -202,8 +201,8 @@ model PropertyOption {
   updatedAt DateTime  @updatedAt @map("updated_at")
   deletedAt DateTime? @map("deleted_at")
 
-  QualitativePropertyOption QualitativePropertyOption[]
-  QualitativePropertyResult QualitativePropertyResult[]
+  qualitativePropertyOption QualitativePropertyOption[]
+  qualitativePropertyResult QualitativePropertyResult[]
 
   @@index([name])
   @@map("property_option")

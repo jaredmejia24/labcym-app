@@ -1,5 +1,6 @@
 import prisma from './../../src/main/database/prisma';
 import { optionSeeders } from './options.seed';
+import { patientSeed } from './patient.seed';
 import { valueReferenceSedders } from './value-reference.seed';
 
 async function main() {
@@ -7,7 +8,8 @@ async function main() {
 
   const [{ negativo, positivo, indefinido }, { fumadores, mujeres15A20 }] = await Promise.all([
     optionSeeders(),
-    valueReferenceSedders()
+    valueReferenceSedders(),
+    patientSeed()
   ]);
 
   await prisma.exam.upsert({
@@ -15,13 +17,13 @@ async function main() {
     update: {},
     create: {
       name: 'Quimica',
-      ExamDivision: {
+      examDivision: {
         create: {
           name: 'Division 1',
-          QualitativeProperty: {
+          qualitativeProperty: {
             create: {
               name: 'cualitativo',
-              QualitativePropertyOption: {
+              qualitativePropertyOption: {
                 createMany: {
                   skipDuplicates: true,
                   data: [{ propertyOptionId: positivo.id }, { propertyOptionId: negativo.id }]
@@ -29,11 +31,11 @@ async function main() {
               }
             }
           },
-          QuantitativeProperty: {
+          quantitativeProperty: {
             create: {
               name: 'eritrocitos',
               unity: 'µm',
-              ValueReferenceTypeQuantitativeProperty: {
+              valueReferenceTypeQuantitativeProperty: {
                 createMany: {
                   skipDuplicates: true,
                   data: [
@@ -54,13 +56,13 @@ async function main() {
     update: {},
     create: {
       name: 'Inmunologia',
-      ExamDivision: {
+      examDivision: {
         create: {
           name: 'Division 1',
-          QualitativeProperty: {
+          qualitativeProperty: {
             create: {
               name: 'covid',
-              QualitativePropertyOption: {
+              qualitativePropertyOption: {
                 createMany: {
                   skipDuplicates: true,
                   data: [{ propertyOptionId: positivo.id }, { propertyOptionId: indefinido.id }]
@@ -68,11 +70,11 @@ async function main() {
               }
             }
           },
-          QuantitativeProperty: {
+          quantitativeProperty: {
             create: {
               name: 'linfocitos',
               unity: 'µm',
-              ValueReferenceTypeQuantitativeProperty: {
+              valueReferenceTypeQuantitativeProperty: {
                 createMany: {
                   skipDuplicates: true,
                   data: [{ valueReferenceTypeId: fumadores.id, value: '1 - 10' }]

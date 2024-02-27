@@ -13,12 +13,13 @@ import { createFileRoute } from '@tanstack/react-router'
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
-import { Route as ConfigExamsExamIdImport } from './routes/config/exams/$examId'
+import { Route as ExamsExamIdImport } from './routes/exams/$examId'
 
 // Create Virtual Routes
 
 const IndexLazyImport = createFileRoute('/')()
-const ConfigExamsIndexLazyImport = createFileRoute('/config/exams/')()
+const ResultsIndexLazyImport = createFileRoute('/results/')()
+const ExamsIndexLazyImport = createFileRoute('/exams/')()
 
 // Create/Update Routes
 
@@ -27,15 +28,18 @@ const IndexLazyRoute = IndexLazyImport.update({
   getParentRoute: () => rootRoute,
 } as any).lazy(() => import('./routes/index.lazy').then((d) => d.Route))
 
-const ConfigExamsIndexLazyRoute = ConfigExamsIndexLazyImport.update({
-  path: '/config/exams/',
+const ResultsIndexLazyRoute = ResultsIndexLazyImport.update({
+  path: '/results/',
   getParentRoute: () => rootRoute,
-} as any).lazy(() =>
-  import('./routes/config/exams/index.lazy').then((d) => d.Route),
-)
+} as any).lazy(() => import('./routes/results/index.lazy').then((d) => d.Route))
 
-const ConfigExamsExamIdRoute = ConfigExamsExamIdImport.update({
-  path: '/config/exams/$examId',
+const ExamsIndexLazyRoute = ExamsIndexLazyImport.update({
+  path: '/exams/',
+  getParentRoute: () => rootRoute,
+} as any).lazy(() => import('./routes/exams/index.lazy').then((d) => d.Route))
+
+const ExamsExamIdRoute = ExamsExamIdImport.update({
+  path: '/exams/$examId',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -47,12 +51,16 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexLazyImport
       parentRoute: typeof rootRoute
     }
-    '/config/exams/$examId': {
-      preLoaderRoute: typeof ConfigExamsExamIdImport
+    '/exams/$examId': {
+      preLoaderRoute: typeof ExamsExamIdImport
       parentRoute: typeof rootRoute
     }
-    '/config/exams/': {
-      preLoaderRoute: typeof ConfigExamsIndexLazyImport
+    '/exams/': {
+      preLoaderRoute: typeof ExamsIndexLazyImport
+      parentRoute: typeof rootRoute
+    }
+    '/results/': {
+      preLoaderRoute: typeof ResultsIndexLazyImport
       parentRoute: typeof rootRoute
     }
   }
@@ -62,8 +70,9 @@ declare module '@tanstack/react-router' {
 
 export const routeTree = rootRoute.addChildren([
   IndexLazyRoute,
-  ConfigExamsExamIdRoute,
-  ConfigExamsIndexLazyRoute,
+  ExamsExamIdRoute,
+  ExamsIndexLazyRoute,
+  ResultsIndexLazyRoute,
 ])
 
 /* prettier-ignore-end */

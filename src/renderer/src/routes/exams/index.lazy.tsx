@@ -3,7 +3,7 @@ import trpcReact from '@renderer/lib/trpc';
 import { Link, createLazyFileRoute } from '@tanstack/react-router';
 import { Loader2 } from 'lucide-react';
 
-export const Route = createLazyFileRoute('/config/exams/')({
+export const Route = createLazyFileRoute('/exams/')({
   component: ConfigExams
 });
 
@@ -33,7 +33,7 @@ function ConfigExamContent() {
         <Link
           key={exam.id}
           className="inline-grid"
-          to="/config/exams/$examId"
+          to="/exams/$examId"
           params={{ examId: exam.id.toString() }}
         >
           <Button className="text-base">{exam.name}</Button>

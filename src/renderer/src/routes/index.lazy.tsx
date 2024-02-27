@@ -7,13 +7,13 @@ export const Route = createLazyFileRoute('/')({
 
 function Index() {
   return (
-    <section className="flex-grow flex gap-6 justify-center items-center">
-      <Link to="/">
+    <section className="flex flex-grow items-center justify-center gap-6">
+      <Link to="/results">
         <Button>Crear Resultado</Button>
       </Link>
-      <Link to="/config/exams">
+      {/* <Link to="/exams">
         <Button>Configuracion</Button>
-      </Link>
+      </Link> */}
     </section>
   );
 }

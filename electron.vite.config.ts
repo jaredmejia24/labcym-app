@@ -5,7 +5,12 @@ import { TanStackRouterVite } from '@tanstack/router-vite-plugin';
 
 export default defineConfig({
   main: {
-    plugins: [externalizeDepsPlugin()]
+    plugins: [externalizeDepsPlugin()],
+    build: {
+      rollupOptions: {
+        external: [/^node:.*/]
+      }
+    }
   },
   preload: {
     plugins: [externalizeDepsPlugin()]
