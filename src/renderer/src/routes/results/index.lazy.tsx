@@ -1,3 +1,4 @@
+import DialogNewPatient from '@renderer/@/components/patient/dialog-modal';
 import { Button } from '@renderer/@/components/ui/button';
 
 import {
@@ -48,13 +49,13 @@ function PatientSection() {
             variant="outline"
             role="combobox"
             aria-expanded={open}
-            className="w-[200px] justify-between text-primary"
+            className="w-56 justify-between text-primary"
           >
             {selectedPatient?.name || 'Seleccione un paciente'}
             <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="w-[200px] p-0">
+        <PopoverContent className="w-56 p-0">
           <Command shouldFilter={false}>
             <CommandInput
               value={searchPatient}
@@ -64,12 +65,13 @@ function PatientSection() {
               }}
               placeholder="Buscar nombre o identidad"
             />
-            <CommandGroup>
+            <CommandGroup className="max-h-32 overflow-y-auto">
               {isLoading ? (
                 <Loader2 className="grid h-11 w-full animate-spin place-items-center py-2" />
               ) : (
                 patientOptions?.map((patient) => (
                   <CommandItem
+                    className="cursor-pointer py-3"
                     key={patient.id}
                     value={patient.id.toString()}
                     onSelect={() => {
@@ -81,6 +83,10 @@ function PatientSection() {
                   </CommandItem>
                 ))
               )}
+
+              <CommandItem className="p-0p cursor-pointer p-0">
+                <DialogNewPatient />
+              </CommandItem>
             </CommandGroup>
           </Command>
         </PopoverContent>

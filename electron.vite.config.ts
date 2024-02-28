@@ -18,7 +18,8 @@ export default defineConfig({
   renderer: {
     resolve: {
       alias: {
-        '@renderer': resolve(__dirname, 'src/renderer/src')
+        '@renderer': resolve(__dirname, 'src/renderer/src'),
+        '@main': resolve(__dirname, 'src/main')
       }
     },
     plugins: [
