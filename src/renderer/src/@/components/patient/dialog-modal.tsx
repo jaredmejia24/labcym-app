@@ -18,6 +18,7 @@ import { createPatientSchema } from '@main/api/patient/patient.schemas';
 import { DatePicker } from '../ui/date-picker';
 import { Loader2 } from 'lucide-react';
 import { useState } from 'react';
+import { toast } from 'sonner';
 
 function DialogNewPatient() {
   const [open, setOpen] = useState(false);
@@ -56,12 +57,11 @@ function DialogContentPatient({ setOpen }: { setOpen: (open: boolean) => void })
       setOpen(false);
     },
     onError: (error) => {
-      alert(error.message);
+      toast(error.message);
     }
   });
 
   async function submitForm(values: RouterInputs['patient']['create']) {
-    console.log(values);
     await patientMutation.mutateAsync(values);
   }
 
@@ -128,9 +128,8 @@ function DialogContentPatient({ setOpen }: { setOpen: (open: boolean) => void })
           />
         </div>
         <DialogFooter className="mt-6">
-          <Button disabled={patientMutation.isLoading} type="submit">
+          <Button isLoading={patientMutation.isLoading} type="submit">
             Guardar cambios
-            {patientMutation.isLoading && <Loader2 className="ml-2 animate-spin" />}
           </Button>
         </DialogFooter>
       </form>

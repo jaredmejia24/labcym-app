@@ -47,9 +47,27 @@ export async function findPatientIdentifierConflict(identifier: string) {
   if (patient) {
     throw new TRPCError({
       code: 'CONFLICT',
-      message: 'Paciente ya existe con este id'
+      message: 'Paciente ya existe con esta identificacion'
     });
   }
 
   return true as const;
+}
+
+export async function findPatientOrThrow(idPatient: number) {
+  const patient = await prisma.patient.findFirst({
+    where: {
+      id: idPatient,
+      deletedAt: null
+    }
+  });
+
+  if (!patient) {
+    throw new TRPCError({
+      code: 'NOT_FOUND',
+      message: 'Paciente no existe'
+    });
+  }
+
+  return patient;
 }
