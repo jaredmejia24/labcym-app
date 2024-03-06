@@ -31,7 +31,7 @@ export async function createPatient(body: z.infer<typeof createPatientSchema>) {
     data: {
       birthDate: body.birthDate,
       name: body.name,
-      identification: body.identificacion
+      identification: body.identificacion || undefined
     }
   });
 }

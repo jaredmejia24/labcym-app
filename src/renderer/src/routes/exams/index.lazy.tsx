@@ -10,7 +10,7 @@ export const Route = createLazyFileRoute('/exams/')({
 function ConfigExams() {
   return (
     <section className="flex-grow p-8">
-      <h1 className="text-3xl">Configuracion</h1>
+      <h1 className="text-3xl">Examenes</h1>
       <ConfigExamContent />
     </section>
   );

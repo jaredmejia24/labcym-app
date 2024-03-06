@@ -20,9 +20,9 @@ import {
 import { Input } from '@renderer/@/components/ui/input';
 import { Popover, PopoverContent, PopoverTrigger } from '@renderer/@/components/ui/popover';
 import trpcReact, { RouterOutputs } from '@renderer/lib/trpc';
-import { createLazyFileRoute } from '@tanstack/react-router';
+import { createLazyFileRoute, useNavigate } from '@tanstack/react-router';
 import { ChevronsUpDown, Loader2 } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm, useFormContext } from 'react-hook-form';
 import { toast } from 'sonner';
 import { useDebounceValue } from 'usehooks-ts';
@@ -43,9 +43,11 @@ function Results() {
     }
   });
 
+  const navigate = useNavigate({ from: '/results' });
+
   const resultMutation = trpcReact.result.create.useMutation({
     onSuccess: () => {
-      // todo navigate
+      navigate({ to: '/exams' });
     },
     onError: (err) => {
       toast(err.message);
@@ -108,6 +110,14 @@ function PatientSection() {
   });
 
   const form = useFormContext<FormValues>();
+
+  const patientId = form.watch('patientId');
+
+  useEffect(() => {
+    const patient = patientOptions?.find((patient) => patient.id === patientId);
+
+    setSelectedPatient(patient || null);
+  }, [patientId]);
 
   return (
     <FormField

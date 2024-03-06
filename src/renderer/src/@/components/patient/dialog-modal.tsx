@@ -1,4 +1,4 @@
-import { useForm } from 'react-hook-form';
+import { useForm, useFormContext } from 'react-hook-form';
 import { Button } from '../ui/button';
 import {
   Dialog,
@@ -13,12 +13,12 @@ import { Input } from '../ui/input';
 
 import { zodResolver } from '@hookform/resolvers/zod';
 
-import trpcReact, { RouterInputs } from '@renderer/lib/trpc';
 import { createPatientSchema } from '@main/api/patient/patient.schemas';
-import { DatePicker } from '../ui/date-picker';
-import { Loader2 } from 'lucide-react';
+import trpcReact, { RouterInputs } from '@renderer/lib/trpc';
 import { useState } from 'react';
 import { toast } from 'sonner';
+import { DatePicker } from '../ui/date-picker';
+import { useCreatePatientMutation } from '@renderer/hooks/patient.hooks';
 
 function DialogNewPatient() {
   const [open, setOpen] = useState(false);
@@ -49,15 +49,14 @@ function DialogContentPatient({ setOpen }: { setOpen: (open: boolean) => void })
     }
   });
 
-  const queryClient = trpcReact.useUtils();
+  const formResultado = useFormContext();
 
-  const patientMutation = trpcReact.patient.create.useMutation({
-    onSuccess: () => {
-      queryClient.patient.getAll.invalidate();
+  console.log(formResultado.getValues());
+
+  const patientMutation = useCreatePatientMutation({
+    onSuccess: (patient) => {
       setOpen(false);
-    },
-    onError: (error) => {
-      toast(error.message);
+      formResultado.setValue('patientId', patient.id, { shouldValidate: false });
     }
   });
 
