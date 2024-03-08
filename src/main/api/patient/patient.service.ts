@@ -2,6 +2,7 @@ import { z } from 'zod';
 import { createPatientSchema, getAllPatientsSchema } from './patient.schemas';
 import prisma from '../../database/prisma';
 import { TRPCError } from '@trpc/server';
+import { Patient } from '@prisma/client';
 
 export async function getAllPatients(queries: z.infer<typeof getAllPatientsSchema>) {
   const patients = await prisma.patient.findMany({
@@ -20,6 +21,41 @@ export async function getAllPatients(queries: z.infer<typeof getAllPatientsSchem
   });
 
   return patients;
+}
+
+export async function getOnePatientByResult(idResult: number | undefined) {
+  let patient: Patient | null;
+
+  if (idResult) {
+    patient = await prisma.patient.findFirst({
+      include: {
+        result: {
+          where: {
+            id: idResult
+          }
+        }
+      }
+    });
+  } else {
+    patient = await prisma.patient.findFirst({
+      include: {
+        result: {
+          orderBy: {
+            createdAt: 'desc'
+          }
+        }
+      }
+    });
+  }
+
+  if (!patient) {
+    throw new TRPCError({
+      code: 'NOT_FOUND',
+      message: 'Paciente no encontrado'
+    });
+  }
+
+  return patient;
 }
 
 export async function createPatient(body: z.infer<typeof createPatientSchema>) {

@@ -46,8 +46,8 @@ function Results() {
   const navigate = useNavigate({ from: '/results' });
 
   const resultMutation = trpcReact.result.create.useMutation({
-    onSuccess: () => {
-      navigate({ to: '/exams' });
+    onSuccess: (newResult) => {
+      navigate({ to: '/exams', search: { idResult: newResult.id } });
     },
     onError: (err) => {
       toast(err.message);

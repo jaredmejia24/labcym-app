@@ -14,11 +14,10 @@ import { Input } from '../ui/input';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import { createPatientSchema } from '@main/api/patient/patient.schemas';
-import trpcReact, { RouterInputs } from '@renderer/lib/trpc';
-import { useState } from 'react';
-import { toast } from 'sonner';
-import { DatePicker } from '../ui/date-picker';
 import { useCreatePatientMutation } from '@renderer/hooks/patient.hooks';
+import { RouterInputs } from '@renderer/lib/trpc';
+import { useState } from 'react';
+import { DatePicker } from '../ui/date-picker';
 
 function DialogNewPatient() {
   const [open, setOpen] = useState(false);
@@ -50,8 +49,6 @@ function DialogContentPatient({ setOpen }: { setOpen: (open: boolean) => void })
   });
 
   const formResultado = useFormContext();
-
-  console.log(formResultado.getValues());
 
   const patientMutation = useCreatePatientMutation({
     onSuccess: (patient) => {

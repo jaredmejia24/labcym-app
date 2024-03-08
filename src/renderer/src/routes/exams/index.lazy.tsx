@@ -1,10 +1,18 @@
 import { Button } from '@renderer/@/components/ui/button';
 import trpcReact from '@renderer/lib/trpc';
-import { Link, createLazyFileRoute } from '@tanstack/react-router';
+import { Link, createFileRoute } from '@tanstack/react-router';
 import { Loader2 } from 'lucide-react';
+import { z } from 'zod';
 
-export const Route = createLazyFileRoute('/exams/')({
-  component: ConfigExams
+export const searchItemExamSchema = z.object({
+  idResult: z.number().int().min(1).optional()
+});
+
+export const Route = createFileRoute('/exams/')({
+  component: ConfigExams,
+  validateSearch: (search) => {
+    return searchItemExamSchema.parse(search);
+  }
 });
 
 function ConfigExams() {
@@ -18,6 +26,8 @@ function ConfigExams() {
 
 function ConfigExamContent() {
   const { data, isLoading } = trpcReact.exam.getExams.useQuery();
+
+  const { idResult } = Route.useSearch();
 
   if (isLoading) {
     return (
@@ -34,6 +44,9 @@ function ConfigExamContent() {
           key={exam.id}
           className="inline-grid"
           to="/exams/$examId"
+          search={{
+            idResult: idResult
+          }}
           params={{ examId: exam.id.toString() }}
         >
           <Button className="text-base">{exam.name}</Button>

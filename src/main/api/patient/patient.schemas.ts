@@ -10,3 +10,7 @@ export const createPatientSchema = z.object({
   identificacion: z.string().optional(),
   birthDate: formatDate('YYYY-MM-DD')
 });
+
+export const getOnePatientByResultSchema = z.object({
+  idResult: z.number().int().min(1).optional()
+});
