@@ -1,9 +1,10 @@
-import { z } from 'zod';
-import { createResultSchema } from './result.schemas';
-import prisma from './../../database/prisma';
-import { findPatientOrThrow } from '../patient/patient.service';
-import dayjs from 'dayjs';
+import { Prisma } from '@prisma/client';
 import { TRPCError } from '@trpc/server';
+import dayjs from 'dayjs';
+import { z } from 'zod';
+import { findPatientOrThrow } from '../patient/patient.service';
+import prisma from './../../database/prisma';
+import { createResultSchema } from './result.schemas';
 
 export async function createResult(body: z.infer<typeof createResultSchema>) {
   await findPatientOrThrow(body.patientId);
@@ -45,4 +46,41 @@ export async function createResult(body: z.infer<typeof createResultSchema>) {
 
     return tx.result.create({ data: { invoiceId: invoiceId, patientId: body.patientId } });
   });
+}
+
+export async function getResultByIdOrLast(resultId: number | undefined) {
+  let result: Prisma.ResultGetPayload<{ include: { patient: true } }> | null;
+
+  if (resultId) {
+    result = await prisma.result.findFirst({
+      include: {
+        patient: true
+      },
+      where: {
+        deletedAt: null,
+        id: resultId
+      }
+    });
+  } else {
+    result = await prisma.result.findFirst({
+      include: {
+        patient: true
+      },
+      where: {
+        deletedAt: null
+      },
+      orderBy: {
+        createdAt: 'desc'
+      }
+    });
+  }
+
+  if (!result) {
+    throw new TRPCError({
+      code: 'NOT_FOUND',
+      message: 'Resultado no encontrado'
+    });
+  }
+
+  return result;
 }

@@ -7,3 +7,7 @@ export const createResultSchema = z.object({
     .min(1, 'Paciente es requerido'),
   invoiceNumber: z.string().min(1, 'Numero de factura es requerido')
 });
+
+export const getResultByIdOrLastSchema = z.object({
+  resultId: z.number().int().min(1).optional()
+});

@@ -1,20 +1,16 @@
 import { publicProcedure, router } from './../../lib/trpc';
-import {
-  createPatientSchema,
-  getAllPatientsSchema,
-  getOnePatientByResultSchema
-} from './patient.schemas';
-import { createPatient, getAllPatients, getOnePatientByResult } from './patient.service';
+import { createPatientSchema, getAllPatientsSchema, updatePatientSchema } from './patient.schemas';
+import { createPatient, getAllPatients, updatePatient } from './patient.service';
 
 export const patientRouter = router({
   getAll: publicProcedure.input(getAllPatientsSchema).query(async (opts) => {
     return getAllPatients(opts.input);
   }),
-  getOneByResult: publicProcedure.input(getOnePatientByResultSchema).query(async (opts) => {
-    return getOnePatientByResult(opts.input.idResult);
-  }),
   create: publicProcedure.input(createPatientSchema).mutation(async (opts) => {
     return createPatient(opts.input);
+  }),
+  update: publicProcedure.input(updatePatientSchema).mutation((opts) => {
+    return updatePatient(opts.input);
   })
 });
 

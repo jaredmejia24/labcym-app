@@ -1,8 +1,7 @@
-import { z } from 'zod';
-import { createPatientSchema, getAllPatientsSchema } from './patient.schemas';
-import prisma from '../../database/prisma';
 import { TRPCError } from '@trpc/server';
-import { Patient } from '@prisma/client';
+import { z } from 'zod';
+import prisma from '../../database/prisma';
+import { createPatientSchema, getAllPatientsSchema, updatePatientSchema } from './patient.schemas';
 
 export async function getAllPatients(queries: z.infer<typeof getAllPatientsSchema>) {
   const patients = await prisma.patient.findMany({
@@ -23,52 +22,34 @@ export async function getAllPatients(queries: z.infer<typeof getAllPatientsSchem
   return patients;
 }
 
-export async function getOnePatientByResult(idResult: number | undefined) {
-  let patient: Patient | null;
-
-  if (idResult) {
-    patient = await prisma.patient.findFirst({
-      include: {
-        result: {
-          where: {
-            id: idResult
-          }
-        }
-      }
-    });
-  } else {
-    patient = await prisma.patient.findFirst({
-      include: {
-        result: {
-          orderBy: {
-            createdAt: 'desc'
-          }
-        }
-      }
-    });
-  }
-
-  if (!patient) {
-    throw new TRPCError({
-      code: 'NOT_FOUND',
-      message: 'Paciente no encontrado'
-    });
-  }
-
-  return patient;
-}
-
 export async function createPatient(body: z.infer<typeof createPatientSchema>) {
-  if (body.identificacion) {
-    await findPatientIdentifierConflict(body.identificacion);
+  if (body.identification) {
+    await findPatientIdentifierConflict(body.identification);
   }
 
   return prisma.patient.create({
     data: {
       birthDate: body.birthDate,
       name: body.name,
-      identification: body.identificacion || undefined
+      identification: body.identification || undefined
     }
+  });
+}
+
+export async function updatePatient(body: z.infer<typeof updatePatientSchema>) {
+  const patient = await findPatientOrThrow(body.idPatient);
+
+  if (body.identification && body.identification !== patient.identification) {
+    await findPatientIdentifierConflict(body.identification);
+  }
+
+  const { idPatient, ...payload } = body;
+
+  return prisma.patient.update({
+    where: {
+      id: body.idPatient
+    },
+    data: payload
   });
 }
 

@@ -7,10 +7,10 @@ export const getAllPatientsSchema = z.object({
 
 export const createPatientSchema = z.object({
   name: z.string().min(1, 'Nombre es requerido'),
-  identificacion: z.string().optional(),
+  identification: z.string().optional(),
   birthDate: formatDate('YYYY-MM-DD')
 });
 
-export const getOnePatientByResultSchema = z.object({
-  idResult: z.number().int().min(1).optional()
+export const updatePatientSchema = createPatientSchema.partial().extend({
+  idPatient: z.number().int().min(1)
 });

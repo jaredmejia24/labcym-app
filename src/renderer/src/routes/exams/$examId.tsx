@@ -1,3 +1,5 @@
+import { zodResolver } from '@hookform/resolvers/zod';
+import { updatePatientSchema } from '@main/api/patient/patient.schemas';
 import { DatePicker } from '@renderer/@/components/ui/date-picker';
 import { Form, FormControl, FormField, FormItem, FormLabel } from '@renderer/@/components/ui/form';
 import { Input } from '@renderer/@/components/ui/input';
@@ -13,6 +15,7 @@ import { createFileRoute } from '@tanstack/react-router';
 import dayjs from 'dayjs';
 import { Loader2 } from 'lucide-react';
 import { useForm } from 'react-hook-form';
+import { z } from 'zod';
 import { searchItemExamSchema } from './index.lazy';
 
 export const Route = createFileRoute('/exams/$examId')({
@@ -37,26 +40,17 @@ function Patient() {
   return (
     <div>
       <h2 className="text-xl">Paciente: </h2>
-      <PatientInfo />
+      <PatientContainer />
     </div>
   );
 }
 
-function PatientInfo() {
+function PatientContainer() {
   const { idResult } = Route.useSearch();
 
-  const { data, isLoading } = trpcReact.patient.getOneByResult.useQuery({ idResult });
-
-  // todo type this and create edit function
-  const form = useForm({
-    defaultValues: {
-      name: data?.name,
-      identification: data?.identification || undefined,
-      birthDate: data?.birthDate ? dayjs(data?.birthDate).toDate() : undefined
-    }
-  });
-
-  if (isLoading) {
+  const { data, isLoading } = trpcReact.result.getById.useQuery({ resultId: idResult });
+  console.log({ data });
+  if (isLoading || !data) {
     return (
       <div className="grid place-items-center">
         <Loader2 className="h-10 w-10 animate-spin" />
@@ -64,9 +58,39 @@ function PatientInfo() {
     );
   }
 
+  return <PatientInfo data={data} />;
+}
+
+function PatientInfo({ data }: { data: RouterOutputs['result']['getById'] }) {
+  const { patient } = data;
+
+  const queryClient = trpcReact.useUtils();
+
+  const { idResult } = Route.useSearch();
+
+  const updatePatientMutation = trpcReact.patient.update.useMutation({
+    onSuccess: () => {
+      queryClient.result.getById.invalidate({ resultId: idResult });
+    }
+  });
+
+  const form = useForm<z.infer<typeof updatePatientSchema>>({
+    resolver: zodResolver(updatePatientSchema),
+    defaultValues: {
+      name: patient.name,
+      birthDate: patient?.birthDate ? dayjs(patient?.birthDate).toDate() : undefined,
+      identification: patient?.identification || '',
+      idPatient: patient.id
+    }
+  });
+
+  function updatePatient(values: z.infer<typeof updatePatientSchema>) {
+    updatePatientMutation.mutate(values);
+  }
+
   return (
     <Form {...form}>
-      <form className="mt-4 flex gap-2">
+      <form onBlur={form.handleSubmit(updatePatient)} className="mt-4 flex gap-2">
         <FormField
           name="name"
           control={form.control}
@@ -145,7 +169,6 @@ type FormValues = {
 };
 function PropertySection(props: { division: Division }) {
   const { division } = props;
-  console.log(division);
 
   // todo type this
   const form = useForm<FormValues>();
@@ -156,13 +179,19 @@ function PropertySection(props: { division: Division }) {
       <form className="mt-4 grid gap-3 text-base">
         {division.quantitativeProperty.map((property) => (
           <FormField
+            key={property.id}
             control={form.control}
             name={'quantitative' + '-' + property.id.toString()}
             render={({ field }) => (
-              <FormItem className="flex items-center gap-2">
+              <FormItem className="flex items-center gap-2 ">
                 <FormLabel>{property.name}</FormLabel>
                 <FormControl>
-                  <Input {...field} type="number" placeholder={property.name} />
+                  <Input
+                    {...field}
+                    className="w-[170px]"
+                    type="number"
+                    placeholder={property.name}
+                  />
                 </FormControl>
                 <span>{property.unity}</span>
               </FormItem>
@@ -171,6 +200,7 @@ function PropertySection(props: { division: Division }) {
         ))}
         {division.qualitativeProperty.map((property) => (
           <FormField
+            key={property.id}
             control={form.control}
             name={'qualitative' + '-' + property.id.toString()}
             render={({ field }) => (

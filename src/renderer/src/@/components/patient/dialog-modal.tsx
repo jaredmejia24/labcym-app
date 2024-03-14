@@ -43,7 +43,7 @@ function DialogContentPatient({ setOpen }: { setOpen: (open: boolean) => void })
     resolver: zodResolver(createPatientSchema),
     defaultValues: {
       birthDate: undefined,
-      identificacion: '',
+      identification: '',
       name: ''
     }
   });
@@ -83,7 +83,7 @@ function DialogContentPatient({ setOpen }: { setOpen: (open: boolean) => void })
           />
           <FormField
             control={form.control}
-            name="identificacion"
+            name="identification"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Identificacion (opcional)</FormLabel>
