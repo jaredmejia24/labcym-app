@@ -9,6 +9,20 @@ export async function getAllExams() {
 
 export type ReturnGetExamById = ReturnType<typeof getExamById>;
 export async function getExamById(queries: z.infer<typeof getExamByIdSchema>) {
+  let idPatient: number;
+
+  if (queries.idPatient) {
+    idPatient = queries.idPatient;
+  } else {
+    const result = await prisma.patient.findFirstOrThrow({
+      orderBy: {
+        createdAt: 'desc'
+      }
+    });
+
+    idPatient = result.id;
+  }
+
   const exam = await prisma.exam.findFirst({
     where: {
       id: queries.idExam,
@@ -23,6 +37,16 @@ export async function getExamById(queries: z.infer<typeof getExamByIdSchema>) {
                 include: {
                   propertyOption: true
                 }
+              },
+              qualitativePropertyResult: {
+                where: {
+                  examResult: {
+                    result: {
+                      patientId: idPatient,
+                      deletedAt: null
+                    }
+                  }
+                }
               }
             },
             where: {
@@ -33,6 +57,16 @@ export async function getExamById(queries: z.infer<typeof getExamByIdSchema>) {
             include: {
               valueReferenceTypeQuantitativeProperty: {
                 include: { quantitativeProperty: true, valueReferenceType: true }
+              },
+              quantitativePropertyResult: {
+                where: {
+                  examResult: {
+                    result: {
+                      patientId: idPatient,
+                      deletedAt: null
+                    }
+                  }
+                }
               }
             },
             where: { deletedAt: null }

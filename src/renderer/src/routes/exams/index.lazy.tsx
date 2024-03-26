@@ -5,7 +5,8 @@ import { Loader2 } from 'lucide-react';
 import { z } from 'zod';
 
 export const searchItemExamSchema = z.object({
-  idResult: z.number().int().min(1).optional()
+  idResult: z.number().int().min(1).optional(),
+  page: z.number().int().min(1).optional().catch(1)
 });
 
 export const Route = createFileRoute('/exams/')({

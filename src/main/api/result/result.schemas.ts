@@ -8,6 +8,8 @@ export const createResultSchema = z.object({
   invoiceNumber: z.string().min(1, 'Numero de factura es requerido')
 });
 
-export const getResultByIdOrLastSchema = z.object({
-  resultId: z.number().int().min(1).optional()
+export const getExamResultsPaginationSchema = z.object({
+  resultId: z.number().int().min(1).optional(),
+  page: z.number().int().min(1).optional(),
+  examId: z.number().int().min(1)
 });

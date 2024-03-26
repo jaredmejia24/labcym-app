@@ -4,7 +4,7 @@ import dayjs from 'dayjs';
 import { z } from 'zod';
 import { findPatientOrThrow } from '../patient/patient.service';
 import prisma from './../../database/prisma';
-import { createResultSchema } from './result.schemas';
+import { createResultSchema, getExamResultsPaginationSchema } from './result.schemas';
 
 export async function createResult(body: z.infer<typeof createResultSchema>) {
   await findPatientOrThrow(body.patientId);
@@ -48,32 +48,77 @@ export async function createResult(body: z.infer<typeof createResultSchema>) {
   });
 }
 
-export async function getResultByIdOrLast(resultId: number | undefined) {
-  let result: Prisma.ResultGetPayload<{ include: { patient: true } }> | null;
+export async function getExamResultsPagination(
+  queries: z.infer<typeof getExamResultsPaginationSchema>
+) {
+  const [examResult, count] = await Promise.all([
+    getResult(queries),
+    getCountExamResultByExam(queries.examId)
+  ]);
 
-  if (resultId) {
-    result = await prisma.result.findFirst({
-      include: {
-        patient: true
-      },
+  return { examResult, count };
+}
+
+async function getResult(queries: z.infer<typeof getExamResultsPaginationSchema>) {
+  if (queries.resultId) {
+    const examResult = await prisma.examResult.findFirst({
       where: {
         deletedAt: null,
-        id: resultId
-      }
-    });
-  } else {
-    result = await prisma.result.findFirst({
+        examId: queries.examId,
+        resultId: queries.resultId
+      },
       include: {
-        patient: true
-      },
-      where: {
-        deletedAt: null
-      },
-      orderBy: {
-        createdAt: 'desc'
+        result: {
+          include: {
+            patient: true
+          }
+        }
       }
     });
+
+    if (!examResult) {
+      throw new TRPCError({
+        code: 'NOT_FOUND',
+        message: 'Resultado Examen no encontrado'
+      });
+    }
+
+    return examResult;
   }
+
+  if (queries.page) {
+    const [result] = await prisma.examResult.findMany({
+      include: {
+        result: {
+          include: {
+            patient: true
+          }
+        }
+      },
+      take: 1,
+      skip: 1 * queries.page,
+      where: { deletedAt: null, examId: queries.examId }
+    });
+
+    return result;
+  }
+
+  const result = await prisma.examResult.findFirst({
+    include: {
+      result: {
+        include: {
+          patient: true
+        }
+      }
+    },
+    where: {
+      deletedAt: null,
+      examId: queries.examId
+    },
+    orderBy: {
+      createdAt: 'desc'
+    }
+  });
 
   if (!result) {
     throw new TRPCError({
@@ -84,3 +129,15 @@ export async function getResultByIdOrLast(resultId: number | undefined) {
 
   return result;
 }
+
+function getCountExamResultByExam(examId: number) {
+  return prisma.examResult.count({
+    where: {
+      deletedAt: null,
+      examId
+    }
+  });
+}
+
+// todo obtain patient from result
+// todo obtain examResult from

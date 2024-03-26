@@ -16,7 +16,6 @@ function TrpcProvider({ children }: { children: ReactNode }) {
   );
 
   return (
-    //@ts-ignore
     <trpcReact.Provider client={trpcClient} queryClient={queryClient}>
       <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
     </trpcReact.Provider>

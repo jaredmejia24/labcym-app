@@ -108,7 +108,8 @@ model ValueReferenceTypeQuantitativeProperty {
 model ExamResult {
   id Int @id @default(autoincrement())
 
-  examId Int @map("exam_id")
+  examId   Int @map("exam_id")
+  resultId Int @map("result_id")
 
   note String? @db.VarChar(255)
 
@@ -116,7 +117,8 @@ model ExamResult {
   updatedAt DateTime  @updatedAt @map("updated_at")
   deletedAt DateTime? @map("deleted_at")
 
-  exam Exam @relation(fields: [examId], references: [id])
+  exam   Exam   @relation(fields: [examId], references: [id])
+  result Result @relation(fields: [resultId], references: [id])
 
   quantitativePropertyResult QuantitativePropertyResult[]
   qualitativePropertyResult  QualitativePropertyResult[]
@@ -232,8 +234,9 @@ model Result {
   updatedAt DateTime  @updatedAt @map("updated_at")
   deletedAt DateTime? @map("deleted_at")
 
-  patient Patient @relation(fields: [patientId], references: [id])
-  invoice Invoice @relation(fields: [invoiceId], references: [id])
+  patient    Patient      @relation(fields: [patientId], references: [id])
+  invoice    Invoice      @relation(fields: [invoiceId], references: [id])
+  ExamResult ExamResult[]
 
   @@map("result")
 }
