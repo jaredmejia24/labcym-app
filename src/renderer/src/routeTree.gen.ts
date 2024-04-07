@@ -13,13 +13,13 @@ import { createFileRoute } from '@tanstack/react-router'
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
+import { Route as ResultsIndexImport } from './routes/results/index'
+import { Route as ExamsIndexImport } from './routes/exams/index'
 import { Route as ExamsExamIdImport } from './routes/exams/$examId'
 
 // Create Virtual Routes
 
 const IndexLazyImport = createFileRoute('/')()
-const ResultsIndexLazyImport = createFileRoute('/results/')()
-const ExamsIndexLazyImport = createFileRoute('/exams/')()
 
 // Create/Update Routes
 
@@ -28,15 +28,15 @@ const IndexLazyRoute = IndexLazyImport.update({
   getParentRoute: () => rootRoute,
 } as any).lazy(() => import('./routes/index.lazy').then((d) => d.Route))
 
-const ResultsIndexLazyRoute = ResultsIndexLazyImport.update({
+const ResultsIndexRoute = ResultsIndexImport.update({
   path: '/results/',
   getParentRoute: () => rootRoute,
-} as any).lazy(() => import('./routes/results/index.lazy').then((d) => d.Route))
+} as any)
 
-const ExamsIndexLazyRoute = ExamsIndexLazyImport.update({
+const ExamsIndexRoute = ExamsIndexImport.update({
   path: '/exams/',
   getParentRoute: () => rootRoute,
-} as any).lazy(() => import('./routes/exams/index.lazy').then((d) => d.Route))
+} as any)
 
 const ExamsExamIdRoute = ExamsExamIdImport.update({
   path: '/exams/$examId',
@@ -56,11 +56,11 @@ declare module '@tanstack/react-router' {
       parentRoute: typeof rootRoute
     }
     '/exams/': {
-      preLoaderRoute: typeof ExamsIndexLazyImport
+      preLoaderRoute: typeof ExamsIndexImport
       parentRoute: typeof rootRoute
     }
     '/results/': {
-      preLoaderRoute: typeof ResultsIndexLazyImport
+      preLoaderRoute: typeof ResultsIndexImport
       parentRoute: typeof rootRoute
     }
   }
@@ -71,8 +71,8 @@ declare module '@tanstack/react-router' {
 export const routeTree = rootRoute.addChildren([
   IndexLazyRoute,
   ExamsExamIdRoute,
-  ExamsIndexLazyRoute,
-  ResultsIndexLazyRoute,
+  ExamsIndexRoute,
+  ResultsIndexRoute,
 ])
 
 /* prettier-ignore-end */

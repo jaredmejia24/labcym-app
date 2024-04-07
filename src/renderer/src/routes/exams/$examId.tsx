@@ -1,5 +1,6 @@
 import { PatientExam } from '@renderer/@/components/patient/patient-exam';
 import { PropertyExam } from '@renderer/@/components/properties/exam-properties';
+import { Button } from '@renderer/@/components/ui/button';
 import {
   Pagination,
   PaginationContent,
@@ -10,12 +11,9 @@ import {
   PaginationPrevious
 } from '@renderer/@/components/ui/pagination';
 import trpcReact from '@renderer/lib/trpc';
-import { createFileRoute } from '@tanstack/react-router';
+import { Link, createFileRoute } from '@tanstack/react-router';
 import { ChevronLeft, Loader2 } from 'lucide-react';
-import { searchItemExamSchema } from './index.lazy';
-import { useState } from 'react';
-import { Link } from '@tanstack/react-router';
-import { Button } from '@renderer/@/components/ui/button';
+import { searchItemExamSchema } from '.';
 
 export const Route = createFileRoute('/exams/$examId')({
   component: ItemExam,
@@ -27,22 +25,23 @@ export const Route = createFileRoute('/exams/$examId')({
 function ItemExam() {
   const { examId } = Route.useParams();
   const { idResult, page } = Route.useSearch();
-  const [count, setCount] = useState(0);
 
-  const { data } = trpcReact.result.getExamResultsPagination.useQuery(
+  const { data, error } = trpcReact.result.getExamResultsPagination.useQuery(
     {
       examId: Number(examId),
       resultId: idResult,
       page
     },
     {
-      onSuccess: (data) => {
-        setCount(data.count);
+      retry: (failureCount, error) => {
+        if (error.message === 'Resultado no encontrado') {
+          return false;
+        }
+
+        return failureCount <= 3;
       }
     }
   );
-
-  console.log(data);
 
   return (
     <div className="mt-2 flex flex-grow flex-col gap-4 p-8">
@@ -51,8 +50,14 @@ function ItemExam() {
           <ChevronLeft className="text-white" />
         </Button>
       </Link>
-      <LoaderContainer examId={Number(examId)} />
-      <PaginationContainer count={count} />
+      {error?.message === 'Resultado no encontrado' ? (
+        <div className="grid flex-grow place-items-center">No hay Resultados</div>
+      ) : (
+        <>
+          <LoaderContainer examId={Number(examId)} />
+          <PaginationContainer count={data?.count || 0} />
+        </>
+      )}
     </div>
   );
 }

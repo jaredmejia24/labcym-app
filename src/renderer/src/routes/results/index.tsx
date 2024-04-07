@@ -20,7 +20,7 @@ import {
 import { Input } from '@renderer/@/components/ui/input';
 import { Popover, PopoverContent, PopoverTrigger } from '@renderer/@/components/ui/popover';
 import trpcReact, { RouterOutputs } from '@renderer/lib/trpc';
-import { createLazyFileRoute, useNavigate } from '@tanstack/react-router';
+import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { ChevronsUpDown, Loader2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useForm, useFormContext } from 'react-hook-form';
@@ -28,7 +28,7 @@ import { toast } from 'sonner';
 import { useDebounceValue } from 'usehooks-ts';
 import { z } from 'zod';
 
-export const Route = createLazyFileRoute('/results/')({
+export const Route = createFileRoute('/results/')({
   component: Results
 });
 
