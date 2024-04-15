@@ -1,19 +1,11 @@
-import { PatientExam } from '@renderer/@/components/patient/patient-exam';
+import { PatientExam } from '@renderer/@/components/patient/components/patient-exam';
 import { PropertyExam } from '@renderer/@/components/properties/exam-properties';
 import { Button } from '@renderer/@/components/ui/button';
-import {
-  Pagination,
-  PaginationContent,
-  PaginationEllipsis,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious
-} from '@renderer/@/components/ui/pagination';
 import trpcReact from '@renderer/lib/trpc';
 import { Link, createFileRoute } from '@tanstack/react-router';
 import { ChevronLeft, Loader2 } from 'lucide-react';
 import { searchItemExamSchema } from '.';
+import { Pagination } from '@renderer/@/components/pagination/components/pagination';
 
 export const Route = createFileRoute('/exams/$examId')({
   component: ItemExam,
@@ -75,6 +67,8 @@ function LoaderContainer({ examId }: { examId: number }) {
     page
   });
 
+  console.log(data);
+
   if (isLoading || !data || !examsData || examsIsLoading) {
     return (
       <div className="grid flex-grow place-items-center">
@@ -104,41 +98,5 @@ function PaginationContainer({ count = 0 }: PaginationContainerProps) {
     activePage = page;
   }
 
-  return (
-    <Pagination className="flex-grow items-end">
-      <PaginationContent>
-        <PaginationItem>
-          <PaginationPrevious
-            to="/exams/$examId"
-            search={{ page: activePage - 1 }}
-            disabled={activePage <= 1}
-            params
-          />
-        </PaginationItem>
-        {Array.from({ length: count }, (_, page) => (
-          <PaginationItem>
-            <PaginationLink
-              to="/exams/$examId"
-              search={{ page: page + 1 }}
-              params
-              isActive={activePage === page + 1}
-            >
-              {page + 1}
-            </PaginationLink>
-          </PaginationItem>
-        ))}
-        <PaginationItem>
-          <PaginationEllipsis />
-        </PaginationItem>
-        <PaginationItem>
-          <PaginationNext
-            to="/exams/$examId"
-            search={{ page: activePage + 1 }}
-            disabled={activePage >= count}
-            params
-          />
-        </PaginationItem>
-      </PaginationContent>
-    </Pagination>
-  );
+  return <Pagination activePage={activePage} totalPages={count} />;
 }

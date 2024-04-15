@@ -5,9 +5,9 @@ import { getRouteApi } from '@tanstack/react-router';
 import dayjs from 'dayjs';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { Form, FormControl, FormField, FormItem, FormLabel } from '../ui/form';
-import { Input } from '../ui/input';
-import { DatePicker } from '../ui/date-picker';
+import { Form, FormControl, FormField, FormItem, FormLabel } from '../../ui/form';
+import { Input } from '../../ui/input';
+import { DatePicker } from '../../ui/date-picker';
 
 const routeApi = getRouteApi('/exams/$examId');
 

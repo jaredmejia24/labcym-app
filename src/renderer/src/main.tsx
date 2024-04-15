@@ -1,4 +1,4 @@
-import { RouterProvider, createRouter } from '@tanstack/react-router';
+import { ErrorComponent, RouterProvider, createRouter } from '@tanstack/react-router';
 import { StrictMode } from 'react';
 import ReactDOM from 'react-dom/client';
 
@@ -8,9 +8,23 @@ import TrpcProvider from './context/trpc.provider';
 
 import './assets/main.css';
 import '@renderer/globals.css';
+import { Link } from '@tanstack/react-router';
+import { Button } from './@/components/ui/button';
 
 // Create a new router instance
-const router = createRouter({ routeTree });
+const router = createRouter({
+  routeTree,
+  defaultErrorComponent: (props) => {
+    return (
+      <div className="m-4 flex flex-col">
+        <Link to="/">
+          <Button>Return</Button>
+        </Link>
+        <ErrorComponent {...props} />
+      </div>
+    );
+  }
+});
 
 // Register the router instance for type safety
 declare module '@tanstack/react-router' {

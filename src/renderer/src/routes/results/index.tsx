@@ -1,6 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { createResultSchema } from '@main/api/result/result.schemas';
-import DialogNewPatient from '@renderer/@/components/patient/dialog-modal';
+import DialogNewPatient from '@renderer/@/components/patient/components/dialog-modal';
 import { Button } from '@renderer/@/components/ui/button';
 
 import {

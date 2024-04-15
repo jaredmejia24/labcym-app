@@ -1,5 +1,5 @@
 import { useForm, useFormContext } from 'react-hook-form';
-import { Button } from '../ui/button';
+import { Button } from '../../ui/button';
 import {
   Dialog,
   DialogContent,
@@ -7,17 +7,17 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger
-} from '../ui/dialog';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../ui/form';
-import { Input } from '../ui/input';
+} from '../../ui/dialog';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../../ui/form';
+import { Input } from '../../ui/input';
 
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import { createPatientSchema } from '@main/api/patient/patient.schemas';
-import { useCreatePatientMutation } from '@renderer/hooks/patient.hooks';
+import { useCreatePatientMutation } from '@renderer/@/components/patient/hooks/patient.hooks';
 import { RouterInputs } from '@renderer/lib/trpc';
 import { useState } from 'react';
-import { DatePicker } from '../ui/date-picker';
+import { DatePicker } from '../../ui/date-picker';
 
 function DialogNewPatient() {
   const [open, setOpen] = useState(false);

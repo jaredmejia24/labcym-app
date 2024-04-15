@@ -1,4 +1,3 @@
-import { Prisma } from '@prisma/client';
 import { TRPCError } from '@trpc/server';
 import dayjs from 'dayjs';
 import { z } from 'zod';
@@ -96,7 +95,7 @@ async function getResult(queries: z.infer<typeof getExamResultsPaginationSchema>
         }
       },
       take: 1,
-      skip: 1 * queries.page,
+      skip: queries.page - 1,
       where: { deletedAt: null, examId: queries.examId }
     });
 
