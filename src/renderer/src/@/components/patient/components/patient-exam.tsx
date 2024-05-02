@@ -1,28 +1,31 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { updatePatientSchema } from '@main/api/patient/patient.schemas';
-import trpcReact, { RouterOutputs } from '@renderer/lib/trpc';
+import trpcReact from '@renderer/lib/trpc';
+import { DataResult } from '@renderer/routes/exams/$examId';
 import { getRouteApi } from '@tanstack/react-router';
 import dayjs from 'dayjs';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
+import { DatePicker } from '../../ui/date-picker';
 import { Form, FormControl, FormField, FormItem, FormLabel } from '../../ui/form';
 import { Input } from '../../ui/input';
-import { DatePicker } from '../../ui/date-picker';
 
 const routeApi = getRouteApi('/exams/$examId');
+
+type RequiredDataResult = Exclude<DataResult, null>;
 
 export function PatientExam({
   patient
 }: {
-  patient: RouterOutputs['result']['getExamResultsPagination']['examResult']['result']['patient'];
+  patient: RequiredDataResult['examResult']['result']['patient'];
 }) {
   const queryClient = trpcReact.useUtils();
 
-  const { idResult } = routeApi.useSearch();
+  const { page } = routeApi.useSearch();
 
   const updatePatientMutation = trpcReact.patient.update.useMutation({
     onSuccess: () => {
-      queryClient.result.getExamResultsPagination.invalidate({ resultId: idResult });
+      queryClient.result.getExamResultsPagination.invalidate({ page });
     }
   });
 

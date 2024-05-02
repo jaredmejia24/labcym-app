@@ -127,40 +127,36 @@ model ExamResult {
 }
 
 model QuantitativePropertyResult {
-  id Int @id @default(autoincrement())
-
   quantitativePropertyId Int @map("quantitative_property_id")
   examResultId           Int @map("exam_result_id")
 
   result Decimal
 
-  createdAt DateTime  @default(now()) @map("created_at")
-  updatedAt DateTime  @updatedAt @map("updated_at")
-  deletedAt DateTime? @map("deleted_at")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
   quantitativeProperty QuantitativeProperty @relation(fields: [quantitativePropertyId], references: [id])
   examResult           ExamResult           @relation(fields: [examResultId], references: [id])
 
+  @@id([quantitativePropertyId, examResultId])
   @@map("quantitative_property_result")
 }
 
 model QualitativePropertyResult {
-  id Int @id @default(autoincrement())
-
   qualitativePropertyId Int  @map("qualitative_property_id")
   examResultId          Int  @map("exam_result_id")
   propertyOptionId      Int? @map("property_option_id")
 
   result String @db.VarChar(255)
 
-  createdAt DateTime  @default(now()) @map("created_at")
-  updatedAt DateTime  @updatedAt @map("updated_at")
-  deletedAt DateTime? @map("deleted_at")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
   qualitativeProperty QualitativeProperty @relation(fields: [qualitativePropertyId], references: [id])
   examResult          ExamResult          @relation(fields: [examResultId], references: [id])
   propertyOption      PropertyOption?     @relation(fields: [propertyOptionId], references: [id])
 
+  @@id([qualitativePropertyId, examResultId])
   @@map("qualitative_property_result")
 }
 

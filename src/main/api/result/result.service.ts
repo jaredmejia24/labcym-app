@@ -70,14 +70,9 @@ export async function getExamResultsPagination(
       qualitativePropertyResult: {
         include: {
           propertyOption: true
-        },
-        where: {
-          deletedAt: null
         }
       },
-      quantitativePropertyResult: {
-        where: { deletedAt: null }
-      },
+      quantitativePropertyResult: true,
       exam: {
         include: {
           examDivision: {
