@@ -7,9 +7,12 @@ export const resultRouter = router({
     return createResult(opts.input);
   }),
 
-  getExamResultsPagination: publicProcedure.input(getExamResultsPaginationSchema).query((opts) => {
-    return getExamResultsPagination(opts.input);
-  })
+  getExamResultsPagination: publicProcedure
+    .input(getExamResultsPaginationSchema)
+    .query(async (opts) => {
+      const something = await getExamResultsPagination(opts.input);
+      return JSON.stringify(something);
+    })
 });
 
 export type ResultRouter = typeof resultRouter;

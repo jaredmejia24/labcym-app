@@ -17,6 +17,7 @@ import {
   FormLabel,
   FormMessage
 } from '@renderer/@/components/ui/form';
+import { GoBack } from '@renderer/@/components/ui/go-back';
 import { Input } from '@renderer/@/components/ui/input';
 import { Popover, PopoverContent, PopoverTrigger } from '@renderer/@/components/ui/popover';
 import trpcReact, { RouterOutputs } from '@renderer/lib/trpc';
@@ -46,8 +47,8 @@ function Results() {
   const navigate = useNavigate({ from: '/results' });
 
   const resultMutation = trpcReact.result.create.useMutation({
-    onSuccess: (newResult) => {
-      navigate({ to: '/exams', search: { idResult: newResult.id } });
+    onSuccess: () => {
+      navigate({ to: '/exams' });
     },
     onError: (err) => {
       toast(err.message);
@@ -60,7 +61,8 @@ function Results() {
 
   return (
     <main className="flex flex-grow flex-col p-6">
-      <h1 className="text-2xl">Crear Resultado</h1>
+      <GoBack params to="/" />
+      <h1 className="mt-3 text-2xl">Crear Resultado</h1>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(createResult)} className="grid gap-8">
           <div className="mt-6 grid gap-3">

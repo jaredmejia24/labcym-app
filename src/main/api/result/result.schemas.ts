@@ -9,7 +9,6 @@ export const createResultSchema = z.object({
 });
 
 export const getExamResultsPaginationSchema = z.object({
-  resultId: z.number().int().min(1).optional(),
   page: z.number().int().min(1).optional(),
   examId: z.number().int().min(1)
 });

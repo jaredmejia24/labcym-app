@@ -1,10 +1,12 @@
-import { RouterOutputs } from '@renderer/lib/trpc';
+import { DataResult } from '@renderer/routes/exams/$examId';
 import { useForm } from 'react-hook-form';
 import { Form, FormControl, FormField, FormItem, FormLabel } from '../ui/form';
 import { Input } from '../ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 
-export function PropertyExam({ exams }: { exams: RouterOutputs['exam']['getExamById'] }) {
+type RequiredDataResult = Exclude<DataResult, null>;
+
+export function PropertyExam({ exams }: { exams: RequiredDataResult['examResult']['exam'] }) {
   return (
     <div>
       <h2 className="text-2xl">{exams?.name}</h2>
@@ -20,26 +22,42 @@ export function PropertyExam({ exams }: { exams: RouterOutputs['exam']['getExamB
   );
 }
 
-type Division = RouterOutputs['exam']['getExamById']['examDivision'][number];
+type Division = RequiredDataResult['examResult']['exam']['examDivision'][number];
 
 type FormValues = {
-  [key in string]: string;
+  [key in `quantitative-${number}` | `qualitative-${number}`]: string;
 };
 function PropertySection(props: { division: Division }) {
   const { division } = props;
 
   // todo type this
-  const form = useForm<FormValues>();
-  //console.log(form.getValues());
+  const form = useForm<FormValues>({
+    // defaultValues: setDefaultValues()
+  });
+
+  // function setDefaultValues(): FormValues{
+  //   const qualitativeProperties = {};
+
+  //   division.qualitativeProperty.forEach(property=>{
+  //     property.qualitativePropertyResult.
+  //     qualitativeProperties[`qualitative-${property.id}`]
+  //   })
+  // }
+
+  function submitForm(values: FormValues) {
+    console.log({ values });
+  }
+
+  console.log(form.getValues());
 
   return (
     <Form {...form}>
-      <form className="mt-4 grid gap-3 text-base">
+      <form onBlur={form.handleSubmit(submitForm)} className="mt-4 grid gap-3 text-base">
         {division.quantitativeProperty.map((property) => (
           <FormField
             key={property.id}
             control={form.control}
-            name={'quantitative' + '-' + property.id.toString()}
+            name={`quantitative-${property.id}`}
             render={({ field }) => (
               <FormItem className="flex items-center gap-2 ">
                 <FormLabel>{property.name}</FormLabel>
@@ -60,7 +78,7 @@ function PropertySection(props: { division: Division }) {
           <FormField
             key={property.id}
             control={form.control}
-            name={'qualitative' + '-' + property.id.toString()}
+            name={`qualitative-${property.id}`}
             render={({ field }) => (
               <FormItem className="flex items-center gap-2">
                 <FormLabel>{property.name}</FormLabel>

@@ -50,93 +50,77 @@ export async function createResult(body: z.infer<typeof createResultSchema>) {
 export async function getExamResultsPagination(
   queries: z.infer<typeof getExamResultsPaginationSchema>
 ) {
-  const [examResult, count] = await Promise.all([
-    getResult(queries),
-    getCountExamResultByExam(queries.examId)
-  ]);
+  const count = await getCountExamResultByExam(queries);
 
-  return { examResult, count };
-}
+  const take = 1;
 
-async function getResult(queries: z.infer<typeof getExamResultsPaginationSchema>) {
-  if (queries.resultId) {
-    const examResult = await prisma.examResult.findFirst({
-      where: {
-        deletedAt: null,
-        examId: queries.examId,
-        resultId: queries.resultId
-      },
-      include: {
-        result: {
-          include: {
-            patient: true
-          }
-        }
-      }
-    });
+  const totalPages = Math.ceil(count / take);
 
-    if (!examResult) {
-      throw new TRPCError({
-        code: 'NOT_FOUND',
-        message: 'Resultado Examen no encontrado'
-      });
-    }
+  const skip = ((queries.page || totalPages) - 1) * take || 0;
 
-    return examResult;
-  }
-
-  if (queries.page) {
-    const [result] = await prisma.examResult.findMany({
-      include: {
-        result: {
-          include: {
-            patient: true
-          }
-        }
-      },
-      take: 1,
-      skip: queries.page - 1,
-      where: { deletedAt: null, examId: queries.examId }
-    });
-
-    return result;
-  }
-
-  const result = await prisma.examResult.findFirst({
+  const examResult = await prisma.examResult.findMany({
+    take,
+    skip,
     include: {
       result: {
         include: {
           patient: true
         }
+      },
+      qualitativePropertyResult: {
+        include: {
+          propertyOption: true
+        },
+        where: {
+          deletedAt: null
+        }
+      },
+      quantitativePropertyResult: {
+        where: { deletedAt: null }
+      },
+      exam: {
+        include: {
+          examDivision: {
+            include: {
+              qualitativeProperty: {
+                include: {
+                  qualitativePropertyOption: {
+                    include: {
+                      propertyOption: true
+                    }
+                  }
+                },
+                where: {
+                  deletedAt: null
+                }
+              },
+              quantitativeProperty: {
+                include: {
+                  valueReferenceTypeQuantitativeProperty: {
+                    include: { quantitativeProperty: true, valueReferenceType: true }
+                  }
+                },
+                where: { deletedAt: null }
+              }
+            },
+            where: { deletedAt: null }
+          }
+        }
       }
     },
     where: {
-      deletedAt: null,
       examId: queries.examId
-    },
-    orderBy: {
-      createdAt: 'desc'
     }
   });
 
-  if (!result) {
-    throw new TRPCError({
-      code: 'NOT_FOUND',
-      message: 'Resultado no encontrado'
-    });
-  }
-
-  return result;
+  return { examResult: examResult[0], totalPages };
 }
 
-function getCountExamResultByExam(examId: number) {
+function getCountExamResultByExam(queries: z.infer<typeof getExamResultsPaginationSchema>) {
   return prisma.examResult.count({
     where: {
       deletedAt: null,
-      examId
+      examId: queries.examId
     }
   });
 }
-
-// todo obtain patient from result
-// todo obtain examResult from

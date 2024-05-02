@@ -16,16 +16,16 @@ export type PaginationProps = {
 };
 export function Pagination({ activePage, totalPages, siblingCount }: PaginationProps) {
   const pages = usePagination({ currentPage: activePage, totalPages, siblingCount });
-  console.log(pages);
+
   return (
     <PaginationComponent className="flex-grow items-end">
       <PaginationContent>
         <PaginationItem>
           <PaginationPrevious search={{ page: activePage - 1 }} disabled={activePage <= 1} params />
         </PaginationItem>
-        {pages.map((page) => {
+        {pages.map((page, i) => {
           if (page === 'dots') {
-            return <PaginationEllipsis />;
+            return <PaginationEllipsis key={`${page}-${i}`} />;
           }
 
           return (

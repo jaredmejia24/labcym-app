@@ -5,7 +5,6 @@ import { Loader2 } from 'lucide-react';
 import { z } from 'zod';
 
 export const searchItemExamSchema = z.object({
-  idResult: z.number().int().min(1).optional(),
   page: z.number().int().min(1).optional().catch(1)
 });
 
@@ -28,8 +27,6 @@ function ConfigExams() {
 function ConfigExamContent() {
   const { data, isLoading } = trpcReact.exam.getExams.useQuery();
 
-  const { idResult } = Route.useSearch();
-
   if (isLoading) {
     return (
       <div className="mt-8 grid  place-items-center">
@@ -45,9 +42,6 @@ function ConfigExamContent() {
           key={exam.id}
           className="inline-grid"
           to="/exams/$examId"
-          search={{
-            idResult: idResult
-          }}
           params={{ examId: exam.id.toString() }}
         >
           <Button className="text-base">{exam.name}</Button>
